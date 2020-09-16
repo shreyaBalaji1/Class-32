@@ -7,11 +7,13 @@ var engine, world;
 var box1, pig1,pig3;
 var backgroundImg,platform;
 var bird, slingshot;
+var bg = "sprites/bg.png";
+var score = 0;
 
 var gameState = "onSling";
 
 function preload() {
-    backgroundImg = loadImage("sprites/bg.png");
+    getBackground();
 }
 
 function setup(){
@@ -42,21 +44,31 @@ function setup(){
 
     //log6 = new Log(230,180,80, PI/2);
     slingshot = new SlingShot(bird.body,{x:200, y:50});
+
+
 }
 
 function draw(){
-    background(backgroundImg);
+    if(backgroundImg) {
+        background(backgroundImg);
+    }
+    fill("white");
+    textSize(35);
+    text("Score: " + score, width-300, 50);
+    
     Engine.update(engine);
     //strokeWeight(4);
     box1.display();
     box2.display();
     ground.display();
     pig1.display();
+    pig1.score();
     log1.display();
 
     box3.display();
     box4.display();
     pig3.display();
+    pig3.score();
     log3.display();
 
     box5.display();
@@ -83,6 +95,49 @@ function mouseReleased(){
 
 function keyPressed(){
     if(keyCode === 32){
-       // slingshot.attach(bird.body);
+        //slingshot.attach(bird.body);
     }
 }
+
+async function getBackground(){
+    var response = await fetch("http://worldtimeapi.org/api/timezone/America/Chicago");
+    var responseJSON = await response.json();
+    console.log(responseJSON);
+
+    var dt = responseJSON.datetime;
+    console.log(dt);
+
+    var hour = dt.slice(11, 13);
+    console.log(hour);
+
+    if(hour>=06 && hour<=19) {
+        //day background
+        bg = "sprites/bg.png";
+    }
+    else{
+        //night background
+        bg = "sprites/bg2.jpg";
+    }
+
+    backgroundImg = loadImage(bg);
+}
+
+/*
+API call
+- Application Program Interface
+- "promise of information"
+- fetch() - sends a request to the API service & collects the response
+
+
+Data Structure
+JSON - JS Object Notation
+- created inside {..}
+- Holds a list of different data types
+- Different elements are separated by a comma
+- {Index_name: Index_value}
+
+JS - executes program synchronously - does not wait for any line to be completed
+                                    - jumps to the next line without waiting
+    Asynchronous - waits for some lines to be completed before jumping to the next line
+
+*/
